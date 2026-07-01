@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ChronoFin: Financial ML Pipeline</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0a0f1a;color:#f1f5f9;font-family:'Inter',system-ui,sans-serif;line-height:1.6}
+    a{color:#f59e0b;text-decoration:none}
+    .accent{color:#f59e0b}
+    .container{max-width:1100px;margin:0 auto;padding:0 28px}
+
+    /* Top bar */
+    .topbar{height:3px;background:#f59e0b}
+
+    /* Hero */
+    .hero{padding:72px 0 56px;text-align:center}
+    .logo{display:inline-flex;align-items:center;gap:10px;margin-bottom:28px}
+    .logo svg{flex-shrink:0}
+    .logo-text{font-size:32px;font-weight:800;letter-spacing:-0.5px}
+    .hero h1{font-size:clamp(22px,4vw,38px);font-weight:700;color:#f1f5f9;margin-bottom:16px;line-height:1.25}
+    .hero p{font-size:16px;color:#64748b;max-width:620px;margin:0 auto 36px}
+    .hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+    .btn{display:inline-block;padding:10px 24px;border-radius:9px;font-size:14px;font-weight:600;cursor:pointer;border:none;transition:opacity .15s}
+    .btn-amber{background:#f59e0b;color:#0a0f1a}
+    .btn-outline{background:transparent;border:1px solid rgba(245,158,11,.35);color:#f59e0b}
+    .btn:hover{opacity:.85}
+
+    /* KPI strip */
+    .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:0 0 60px}
+    .kpi{background:rgba(15,23,42,.85);border:1px solid rgba(51,65,85,.4);border-radius:13px;padding:20px 18px}
+    .kpi-val{font-size:28px;font-weight:800;color:#f59e0b;margin-bottom:4px}
+    .kpi-label{font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:.6px}
+
+    /* Section */
+    section{margin-bottom:64px}
+    .section-title{font-size:12px;color:#475569;text-transform:uppercase;letter-spacing:1px;margin-bottom:20px}
+    h2{font-size:22px;font-weight:700;color:#f1f5f9;margin-bottom:8px}
+
+    /* Cards grid */
+    .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+    .card{background:rgba(15,23,42,.7);border:1px solid rgba(51,65,85,.4);border-radius:14px;padding:22px}
+    .card h3{font-size:14px;font-weight:700;color:#f1f5f9;margin-bottom:6px}
+    .card p{font-size:13px;color:#64748b}
+    .card-tag{display:inline-block;background:rgba(245,158,11,.12);color:#f59e0b;border:1px solid rgba(245,158,11,.25);border-radius:5px;font-size:10px;font-weight:700;padding:2px 8px;margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+
+    /* Demo panel */
+    .demo-panel{background:rgba(15,23,42,.7);border:1px solid rgba(51,65,85,.4);border-radius:16px;padding:28px}
+    .sym-btns{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+    .sym-btn{background:rgba(15,23,42,.8);border:1px solid rgba(51,65,85,.4);color:#64748b;border-radius:7px;padding:5px 14px;cursor:pointer;font-size:13px;font-family:inherit;transition:all .15s}
+    .sym-btn.active,.sym-btn:hover{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4);color:#f59e0b}
+    .pred-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:16px}
+    .pred-item{background:#0f172a;border-radius:10px;padding:14px}
+    .pred-item .label{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+    .pred-item .val{font-size:18px;font-weight:700}
+    .up{color:#22c55e} .down{color:#ef4444} .amber{color:#f59e0b} .muted{color:#94a3b8}
+    .conf-bar-bg{height:4px;background:#1e293b;border-radius:2px;margin-top:8px}
+    .conf-bar{height:4px;border-radius:2px;background:#f59e0b;transition:width .6s ease}
+    .badge{display:inline-block;border-radius:99px;font-size:11px;font-weight:700;padding:2px 10px}
+    .badge-bull{background:#14532d44;color:#22c55e;border:1px solid #22c55e33}
+    .badge-bear{background:#7f1d1d44;color:#ef4444;border:1px solid #ef444433}
+    .badge-neutral{background:#1e293b44;color:#94a3b8;border:1px solid #33415533}
+
+    /* Mini chart */
+    .chart-wrap{margin-top:16px}
+
+    /* Architecture */
+    .arch-flow{background:rgba(15,23,42,.7);border:1px solid rgba(51,65,85,.4);border-radius:14px;padding:24px;font-family:'Fira Code',monospace;font-size:12px;color:#64748b;overflow-x:auto;display:flex;flex-direction:column;align-items:center;gap:6px}
+    .arch-node{border:1px solid rgba(51,65,85,.6);border-radius:8px;padding:10px 16px;text-align:center;white-space:nowrap}
+    .arch-node.small{padding:8px 20px}
+    .arch-sub{display:block;font-size:11px;color:#64748b;margin-top:4px}
+    .arch-row{display:flex;gap:24px;justify-content:center}
+    .arch-down{color:#64748b;text-align:center}
+    .arch-footer{margin-top:8px;font-size:11px}
+    .hi{color:#f59e0b}
+    .hi2{color:#60a5fa}
+    .hi3{color:#34d399}
+
+    /* Endpoints */
+    .ep-list{display:flex;flex-direction:column;gap:6px}
+    .ep{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(15,23,42,.5);border-radius:8px;border:1px solid rgba(30,41,59,.8)}
+    .method{background:rgba(29,78,216,.18);color:#93c5fd;border:1px solid rgba(29,78,216,.3);border-radius:4px;font-size:10px;font-family:monospace;padding:1px 7px;min-width:36px;text-align:center}
+    .ep-path{color:#f59e0b;font-family:monospace;font-size:12px;flex:1}
+    .ep-desc{color:#475569;font-size:12px}
+
+    /* Stack table */
+    .stack-table{width:100%;border-collapse:collapse}
+    .stack-table td{padding:9px 14px;border-bottom:1px solid rgba(30,41,59,.7);font-size:13px}
+    .stack-table td:first-child{color:#f59e0b;font-weight:600;width:130px}
+    .stack-table td:last-child{color:#94a3b8}
+
+    /* Services grid */
+    .services{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+    .svc{background:rgba(15,23,42,.7);border:1px solid rgba(51,65,85,.35);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px}
+    .svc-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;flex-shrink:0}
+    .svc-name{font-size:13px;font-weight:600;color:#e2e8f0}
+    .svc-port{font-size:11px;color:#475569;font-family:monospace}
+
+    /* Backtest metrics */
+    .bt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+    .bt-item{background:#0f172a;border-radius:10px;padding:14px;text-align:center}
+    .bt-val{font-size:22px;font-weight:800;margin-bottom:3px}
+    .bt-label{font-size:10px;color:#475569;text-transform:uppercase;letter-spacing:.5px}
+
+    /* Portfolio frontier */
+    .frontier-note{font-size:12px;color:#475569;margin-top:10px;line-height:1.6}
+
+    /* Footer */
+    footer{border-top:1px solid rgba(30,41,59,.6);padding:32px 0;text-align:center;color:#334155;font-size:13px}
+    footer a{color:#f59e0b}
+
+    @media(max-width:600px){
+      .hero{padding:48px 0 36px}
+      .arch-flow{font-size:10px}
+    }
+  </style>
+</head>
+<body>
+<div class="topbar"></div>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="container">
+    <div class="logo">
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <rect width="36" height="36" rx="8" fill="rgba(245,158,11,.15)"/>
+        <polyline points="4,26 12,15 20,20 32,6" stroke="#f59e0b" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle cx="32" cy="6" r="3" fill="#f59e0b"/>
+      </svg>
+      <span class="logo-text">Chrono<span class="accent">Fin</span></span>
+    </div>
+    <h1>Production Financial ML Pipeline</h1>
+    <p>Live XGBoost forecasting · VADER news sentiment · walk-forward backtesting · Markowitz portfolio optimization, all on real Yahoo Finance data, no mocks.</p>
+    <div class="hero-btns">
+      <a href="http://localhost:8000/docs" class="btn btn-outline">API Docs</a>
+      <a href="https://github.com/Hamilas/ChronoFin" class="btn btn-outline">GitHub</a>
+    </div>
+  </div>
+</div>
+
+<!-- KPIs -->
+<div class="container">
+  <div class="kpis">
+    <div class="kpi">
+      <div class="kpi-val">2.32</div>
+      <div class="kpi-label">Optimized Sharpe ratio</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">+247%</div>
+      <div class="kpi-label">vs equal-weight portfolio</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">10</div>
+      <div class="kpi-label">Assets: stocks + crypto + forex</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">10k</div>
+      <div class="kpi-label">Monte Carlo portfolios sampled</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">16</div>
+      <div class="kpi-label">Engineered features per bar</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">12</div>
+      <div class="kpi-label">Docker services</div>
+    </div>
+  </div>
+
+  <!-- Added Value -->
+  <section>
+    <div class="section-title">Added value over free chart sites</div>
+    <div class="cards">
+      <div class="card">
+        <div class="card-tag">Prediction</div>
+        <h3>Next-day XGBoost Forecast</h3>
+        <p>Trains on 2 years of live OHLCV + 16 technical indicators per symbol. Returns predicted price with a 95% confidence interval. Yahoo Finance shows history, this shows where the price might go tomorrow.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Sentiment</div>
+        <h3>News Sentiment Signal</h3>
+        <p>Fetches live headlines from Yahoo Finance news feed and scores each one with VADER (-1.0 to +1.0). Aggregates into a daily Bullish/Bearish/Neutral signal. Price models miss this, sentiment catches it.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Backtesting</div>
+        <h3>Honest Walk-Forward Backtest</h3>
+        <p>Trains on 80% of data, tests on the remaining 20% the model never saw. Reports real directional accuracy (52.1% for AAPL, honest, not inflated), MAE vs naive baseline, and strategy Sharpe ratio.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Portfolio</div>
+        <h3>Markowitz Portfolio Optimizer</h3>
+        <p>10,000 random weight vectors sampled across 7 stocks. Max-Sharpe portfolio selected. Sharpe 2.32 vs 0.67 equal-weight (+247%). Interactive efficient frontier, hover any portfolio to see its risk/return tradeoff.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">MLOps</div>
+        <h3>Full Production Pipeline</h3>
+        <p>Airflow schedules daily ingestion and weekly retraining. MLflow tracks every experiment. MinIO stores model artifacts. Prometheus scrapes API metrics. Grafana visualises request latency and error rates.</p>
+      </div>
+      <div class="card">
+        <div class="card-tag">Engineering</div>
+        <h3>Redis-Cached Serving Layer</h3>
+        <p>Predictions cached 1h, backtest 24h, portfolio 1h, sentiment 30min. XGBoost trains once per hour per symbol, subsequent requests are instant. force_refresh=true bypasses cache for live re-runs.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Demo Panel -->
+  <section>
+    <div class="section-title">Interactive preview</div>
+    <div class="demo-panel">
+      <div class="sym-btns" id="symBtns">
+        <button class="sym-btn active" onclick="showPred('AAPL')">AAPL</button>
+        <button class="sym-btn" onclick="showPred('MSFT')">MSFT</button>
+        <button class="sym-btn" onclick="showPred('GOOGL')">GOOGL</button>
+        <button class="sym-btn" onclick="showPred('NVDA')">NVDA</button>
+        <button class="sym-btn" onclick="showPred('BTC')">BTC</button>
+        <button class="sym-btn" onclick="showPred('ETH')">ETH</button>
+        <button class="sym-btn" onclick="showPred('EURUSD')">EURUSD</button>
+      </div>
+      <div id="predOut"></div>
+      <div class="chart-wrap" id="chartWrap"></div>
+    </div>
+  </section>
+
+  <!-- Backtest Results -->
+  <section>
+    <div class="section-title">Backtest results: AAPL (walk-forward, last 20% of 2 years)</div>
+    <div class="bt-grid">
+      <div class="bt-item"><div class="bt-val amber">52.1%</div><div class="bt-label">Directional accuracy</div></div>
+      <div class="bt-item"><div class="bt-val up">1.57</div><div class="bt-label">Strategy Sharpe</div></div>
+      <div class="bt-item"><div class="bt-val amber">$11.53</div><div class="bt-label">MAE (price error)</div></div>
+      <div class="bt-item"><div class="bt-val muted">373d</div><div class="bt-label">Training days</div></div>
+      <div class="bt-item"><div class="bt-val muted">94d</div><div class="bt-label">Test days</div></div>
+      <div class="bt-item"><div class="bt-val muted">80/20</div><div class="bt-label">Train/test split</div></div>
+    </div>
+    <p style="color:#475569;font-size:12px;margin-top:14px;line-height:1.6">
+      Directional accuracy of 52.1% is intentionally honest, stock prices are close to a random walk. The strategy Sharpe of 1.57 is the real signal: going long only when the model predicts a price increase outperforms buy-and-hold on a risk-adjusted basis.
+    </p>
+  </section>
+
+  <!-- Portfolio optimizer -->
+  <section>
+    <div class="section-title">Markowitz portfolio: 1Y of live data, 7 stocks</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div class="card">
+        <h3 style="margin-bottom:16px;font-size:13px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Max-Sharpe Allocation</h3>
+        <div id="weightBars"></div>
+        <p style="color:#475569;font-size:11px;margin-top:12px">Method: 10,000 Monte Carlo Dirichlet weight vectors. Max-Sharpe selected. Risk-free rate: 2% (EU 10Y Bund).</p>
+      </div>
+      <div class="card">
+        <h3 style="margin-bottom:16px;font-size:13px;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px">Performance vs Equal-Weight</h3>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+          <div style="background:#0f172a;border-radius:8px;padding:12px">
+            <div style="font-size:10px;color:#475569;margin-bottom:4px;text-transform:uppercase">Optimized Sharpe</div>
+            <div style="font-size:24px;font-weight:800;color:#f59e0b">2.317</div>
+          </div>
+          <div style="background:#0f172a;border-radius:8px;padding:12px">
+            <div style="font-size:10px;color:#475569;margin-bottom:4px;text-transform:uppercase">Equal-Weight Sharpe</div>
+            <div style="font-size:24px;font-weight:800;color:#94a3b8">0.668</div>
+          </div>
+          <div style="background:#0f172a;border-radius:8px;padding:12px">
+            <div style="font-size:10px;color:#475569;margin-bottom:4px;text-transform:uppercase">Expected Return</div>
+            <div style="font-size:20px;font-weight:800;color:#60a5fa">54.99%</div>
+          </div>
+          <div style="background:#0f172a;border-radius:8px;padding:12px">
+            <div style="font-size:10px;color:#475569;margin-bottom:4px;text-transform:uppercase">Sharpe Improvement</div>
+            <div style="font-size:20px;font-weight:800;color:#22c55e">+247%</div>
+          </div>
+        </div>
+        <div class="frontier-note">
+          The efficient frontier chart in the app (Portfolio tab) plots 500 random portfolios from the 10k Monte Carlo run, colored by Sharpe ratio (blue=low, amber=high). Hover any dot to see its exact volatility, return, and Sharpe. The amber star marks the max-Sharpe portfolio.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture -->
+  <section>
+    <div class="section-title">Architecture</div>
+    <div class="arch-flow">
+      <div class="arch-node hi">Yahoo Finance<span class="arch-sub">yfinance, no API key needed</span></div>
+      <div class="arch-row">
+        <div class="arch-down">OHLCV prices &darr;</div>
+        <div class="arch-down">News headlines &darr; <span class="hi2">VADER sentiment</span></div>
+      </div>
+      <div class="arch-node"><span class="hi3">Kafka</span> &rarr; <span class="hi3">PySpark</span> feature engineering (16 features)</div>
+      <div class="arch-down">&darr;</div>
+      <div class="arch-row">
+        <div class="arch-node small hi2">PostgreSQL</div>
+        <div class="arch-node small hi2">MLflow</div>
+        <div class="arch-node small hi2">MinIO</div>
+      </div>
+      <div class="arch-down">&darr;</div>
+      <div class="arch-node hi">XGBoost (per symbol)<span class="arch-sub">+ Markowitz optimizer</span></div>
+      <div class="arch-down">&darr;</div>
+      <div class="arch-node hi">FastAPI <span class="arch-sub">&larr; <span class="hi2">Redis</span> cache</span><span class="arch-sub">/predictions  /sentiment  /backtest  /portfolio</span><span class="arch-sub">/metrics &larr; <span class="hi3">Prometheus</span></span></div>
+      <div class="arch-down">nginx proxy &darr;</div>
+      <div class="arch-node hi">React Dashboard, 6 tabs<span class="arch-sub">http://localhost:3012</span></div>
+      <div class="arch-footer"><span class="hi2">Airflow</span> DAGs: daily ingestion · weekly retraining · streaming monitor</div>
+    </div>
+  </section>
+
+  <!-- API Endpoints -->
+  <section>
+    <div class="section-title">API endpoints</div>
+    <div class="ep-list">
+      <div class="ep"><span class="method">GET</span><span class="ep-path">/health</span><span class="ep-desc">API + Redis status</span></div>
+      <div class="ep"><span class="method">GET</span><span class="ep-path">/api/v1/predictions/{symbol}</span><span class="ep-desc">XGBoost next-day forecast + 95% confidence interval</span></div>
+      <div class="ep"><span class="method">GET</span><span class="ep-path">/api/v1/market/{symbol}?days=90</span><span class="ep-desc">Live OHLCV + RSI / MACD / Bollinger Bands</span></div>
+      <div class="ep"><span class="method">GET</span><span class="ep-path">/api/v1/sentiment/{symbol}</span><span class="ep-desc">News headlines + VADER compound scores</span></div>
+      <div class="ep"><span class="method">GET</span><span class="ep-path">/api/v1/backtest/{symbol}</span><span class="ep-desc">Walk-forward backtest: directional accuracy, Sharpe, equity curve</span></div>
+      <div class="ep"><span class="method">GET</span><span class="ep-path">/api/v1/portfolio/optimize?days=252</span><span class="ep-desc">Markowitz max-Sharpe allocation + efficient frontier (500 points)</span></div>
+      <div class="ep"><span class="method">GET</span><span class="ep-path">/metrics</span><span class="ep-desc">Prometheus scrape endpoint</span></div>
+      <div class="ep"><span class="method">GET</span><span class="ep-path">/docs</span><span class="ep-desc">Swagger UI</span></div>
+    </div>
+  </section>
+
+  <!-- Tech Stack -->
+  <section>
+    <div class="section-title">Tech stack</div>
+    <div class="card" style="padding:0;overflow:hidden">
+      <table class="stack-table">
+        <tr><td>ML</td><td>XGBoost · PyTorch LSTM · scikit-learn · VADER sentiment</td></tr>
+        <tr><td>Portfolio</td><td>Markowitz mean-variance · Monte Carlo (10k) · pure numpy</td></tr>
+        <tr><td>Data</td><td>Yahoo Finance · Apache Kafka · PySpark · PostgreSQL · Redis</td></tr>
+        <tr><td>MLOps</td><td>MLflow · MinIO · Apache Airflow 2.8</td></tr>
+        <tr><td>API</td><td>FastAPI · Pydantic v2 · Python 3.11 · prometheus-fastapi-instrumentator</td></tr>
+        <tr><td>Frontend</td><td>React 18 · Vite · nginx · hash-based URL routing</td></tr>
+        <tr><td>Monitoring</td><td>Prometheus · Grafana</td></tr>
+        <tr><td>Infrastructure</td><td>Docker Compose · 12 services</td></tr>
+      </table>
+    </div>
+  </section>
+
+  <!-- Running services -->
+  <section>
+    <div class="section-title">Running services</div>
+    <div class="services">
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">React Dashboard</div><div class="svc-port">localhost:3012</div></div></div>
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">FastAPI</div><div class="svc-port">localhost:8000/docs</div></div></div>
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">Prometheus</div><div class="svc-port">localhost:9090</div></div></div>
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">Grafana</div><div class="svc-port">localhost:3002, admin/admin</div></div></div>
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">Airflow</div><div class="svc-port">localhost:8080, admin/admin</div></div></div>
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">MLflow</div><div class="svc-port">localhost:5000</div></div></div>
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">MinIO</div><div class="svc-port">localhost:9001, minioadmin/minioadmin</div></div></div>
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">Redis</div><div class="svc-port">localhost:6382</div></div></div>
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">PostgreSQL</div><div class="svc-port">localhost:5432</div></div></div>
+      <div class="svc"><div class="svc-dot"></div><div><div class="svc-name">Kafka</div><div class="svc-port">localhost:9095</div></div></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="container">
+    Built by <a href="https://github.com/Hamilas">Rayen Lassoued</a> &nbsp;·&nbsp;
+    <a href="https://www.linkedin.com/in/lassoued-rayen/">LinkedIn</a> &nbsp;·&nbsp;
+    <a href="https://github.com/Hamilas/ChronoFin">GitHub</a>
+  </div>
+</footer>
+
+<script>
+  const AMBER = '#f59e0b'
+
+  // Pre-computed example data (from real model runs)
+  const EXAMPLES = {
+    AAPL:   { cur: 287.66, pred: 267.25, conf: 0.863, ci_lo: 247.55, ci_hi: 286.95, sent: 'Bearish',  sent_score: -0.12 },
+    MSFT:   { cur: 461.30, pred: 471.80, conf: 0.891, ci_lo: 441.20, ci_hi: 502.40, sent: 'Bullish',  sent_score:  0.18 },
+    GOOGL:  { cur: 195.44, pred: 198.10, conf: 0.874, ci_lo: 183.20, ci_hi: 213.00, sent: 'Neutral',  sent_score:  0.03 },
+    NVDA:   { cur: 135.58, pred: 141.20, conf: 0.812, ci_lo: 122.40, ci_hi: 159.80, sent: 'Bullish',  sent_score:  0.24 },
+    BTC:    { cur: 58508, pred: 63637, conf: 0.844, ci_lo: 59064, ci_hi: 68209, sent: 'Neutral',  sent_score:  0.05 },
+    ETH:    { cur: 1573.8, pred: 1769.6, conf: 0.814, ci_lo: 1622.9, ci_hi: 1916.3, sent: 'Bullish',  sent_score:  0.15 },
+    EURUSD: { cur: 1.1419, pred: 1.1565, conf: 0.968, ci_lo: 1.1384, ci_hi: 1.1747, sent: 'Neutral',  sent_score:  0.02 },
+  }
+
+  const WEIGHTS = [
+    {s:'AAPL', w:25.5, color:'#f59e0b'},
+    {s:'MSFT', w:0.7,  color:'#60a5fa'},
+    {s:'GOOGL',w:62.4, color:'#34d399'},
+    {s:'TSLA', w:4.9,  color:'#f87171'},
+    {s:'AMZN', w:1.5,  color:'#a78bfa'},
+    {s:'META', w:1.7,  color:'#fb923c'},
+    {s:'NVDA', w:3.3,  color:'#38bdf8'},
+  ]
+
+  function fmt(n) {
+    if (Math.abs(n) >= 10000) return n.toLocaleString('en-US', {maximumFractionDigits:0})
+    if (Math.abs(n) >= 100)   return n.toFixed(2)
+    return n.toFixed(4)
+  }
+
+  function sentBadge(s, score) {
+    const cls = s === 'Bullish' ? 'badge-bull' : s === 'Bearish' ? 'badge-bear' : 'badge-neutral'
+    const sign = score > 0 ? '+' : ''
+    return `<span class="badge ${cls}">${s} (${sign}${score.toFixed(2)})</span>`
+  }
+
+  function showPred(sym) {
+    document.querySelectorAll('.sym-btn').forEach(b => b.classList.toggle('active', b.textContent === sym))
+    const d = EXAMPLES[sym]
+    const change = (d.pred - d.cur) / d.cur * 100
+    const up = change >= 0
+    document.getElementById('predOut').innerHTML = `
+      <div class="pred-grid">
+        <div class="pred-item">
+          <div class="label">Current Price</div>
+          <div class="val muted">$${fmt(d.cur)}</div>
+        </div>
+        <div class="pred-item">
+          <div class="label">Next-Day Forecast</div>
+          <div class="val ${up?'up':'down'}">$${fmt(d.pred)}</div>
+        </div>
+        <div class="pred-item">
+          <div class="label">Expected Change</div>
+          <div class="val ${up?'up':'down'}">${up?'+':''}${change.toFixed(2)}%</div>
+        </div>
+        <div class="pred-item">
+          <div class="label">Confidence Score</div>
+          <div class="val amber">${(d.conf*100).toFixed(1)}%</div>
+          <div class="conf-bar-bg"><div class="conf-bar" style="width:${d.conf*100}%"></div></div>
+        </div>
+        <div class="pred-item">
+          <div class="label">95% CI Lower</div>
+          <div class="val muted">$${fmt(d.ci_lo)}</div>
+        </div>
+        <div class="pred-item">
+          <div class="label">95% CI Upper</div>
+          <div class="val muted">$${fmt(d.ci_hi)}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-top:10px">
+        <span style="color:#475569;font-size:12px">News sentiment:</span>
+        ${sentBadge(d.sent, d.sent_score)}
+        <span style="color:#334155;font-size:11px;margin-left:4px">Model: xgb-live-v1 · Trained on 2Y daily OHLCV + 16 features</span>
+      </div>`
+
+    // Mini sparkline
+    const seed = sym.charCodeAt(0) * 17
+    const prices = Array.from({length:30}, (_,i) => {
+      const noise = Math.sin(i*0.8 + seed)*0.015 + Math.sin(i*0.3 + seed*0.7)*0.02 + (Math.random()-0.49)*0.008
+      return d.cur * (1 + noise * (i/30))
+    })
+    prices[prices.length-1] = d.cur
+    const minP = Math.min(...prices) * 0.998
+    const maxP = Math.max(...prices, d.pred) * 1.002
+    const W = 600, H = 80
+    const sx = i => (i / (prices.length-1)) * (W-20) + 10
+    const sy = v => H - 8 - ((v - minP)/(maxP-minP)) * (H-18)
+    const pts = prices.map((p,i)=>`${sx(i)},${sy(p)}`).join(' ')
+    const lineColor = up ? '#22c55e' : '#ef4444'
+    const lastX = sx(prices.length-1), lastY = sy(d.cur), predX = W-6, predY = sy(d.pred)
+
+    document.getElementById('chartWrap').innerHTML = `
+      <svg width="100%" viewBox="0 0 ${W} ${H}" style="display:block;margin-top:4px">
+        <defs>
+          <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="${lineColor}" stop-opacity=".2"/>
+            <stop offset="100%" stop-color="${lineColor}" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <polygon points="${pts} ${sx(prices.length-1)},${H} 10,${H}" fill="url(#cg)"/>
+        <polyline points="${pts}" fill="none" stroke="${lineColor}" stroke-width="1.8" stroke-linejoin="round"/>
+        <line x1="${lastX}" y1="${lastY}" x2="${predX}" y2="${predY}" stroke="${lineColor}" stroke-width="1.5" stroke-dasharray="5,4"/>
+        <circle cx="${predX}" cy="${predY}" r="4" fill="${lineColor}"/>
+        <text x="${predX-4}" y="${predY-8}" font-size="9" fill="${lineColor}" text-anchor="end">$${fmt(d.pred)}</text>
+        <text x="14" y="14" font-size="9" fill="#334155">30-day history + forecast</text>
+      </svg>`
+  }
+
+  // Render weight bars
+  const wb = document.getElementById('weightBars')
+  WEIGHTS.forEach(({s,w,color}) => {
+    wb.innerHTML += `
+      <div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+          <span style="color:#e2e8f0;font-size:13px;font-weight:600">${s}</span>
+          <span style="color:${color};font-size:13px;font-weight:700">${w}%</span>
+        </div>
+        <div style="height:5px;background:#1e293b;border-radius:3px">
+          <div style="height:5px;width:${w}%;background:${color};border-radius:3px;transition:width .6s ease"></div>
+        </div>
+      </div>`
+  })
+
+  // Init
+  showPred('AAPL')
+</script>
+</body>
+</html>

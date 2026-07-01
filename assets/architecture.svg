@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="560" viewBox="0 0 720 560" font-family="Inter, Arial, sans-serif">
+  <rect width="720" height="560" fill="#0a0f1a"/>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="#f59e0b"/>
+    </marker>
+  </defs>
+
+  <rect x="220" y="16" width="280" height="50" rx="8" fill="#111827" stroke="#30363d" stroke-width="1.5"/>
+  <text x="360" y="38" text-anchor="middle" fill="#e6edf3" font-size="12" font-weight="700">Yahoo Finance</text>
+  <text x="360" y="56" text-anchor="middle" fill="#8b949e" font-size="10">yfinance, no API key required</text>
+
+  <line x1="300" y1="66" x2="230" y2="100" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="230" y="86" text-anchor="middle" fill="#64748b" font-size="9">OHLCV prices</text>
+  <line x1="420" y1="66" x2="490" y2="100" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="500" y="86" text-anchor="middle" fill="#64748b" font-size="9">News, VADER sentiment</text>
+
+  <rect x="100" y="102" width="260" height="46" rx="8" fill="#111827" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="230" y="130" text-anchor="middle" fill="#fdba74" font-size="12" font-weight="700">Kafka</text>
+
+  <line x1="360" y1="125" x2="400" y2="125" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="402" y="102" width="260" height="46" rx="8" fill="#111827" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="532" y="130" text-anchor="middle" fill="#fdba74" font-size="12" font-weight="700">PySpark feature engineering</text>
+
+  <line x1="230" y1="148" x2="230" y2="180" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="360" y1="148" x2="360" y2="180" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="500" y1="148" x2="500" y2="180" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="130" y="182" width="200" height="44" rx="8" fill="#111827" stroke="#30363d" stroke-width="1.5"/>
+  <text x="230" y="209" text-anchor="middle" fill="#e6edf3" font-size="12" font-weight="700">PostgreSQL</text>
+
+  <rect x="340" y="182" width="100" height="44" rx="8" fill="#111827" stroke="#30363d" stroke-width="1.5"/>
+  <text x="390" y="209" text-anchor="middle" fill="#e6edf3" font-size="12" font-weight="700">MLflow</text>
+
+  <rect x="460" y="182" width="150" height="44" rx="8" fill="#111827" stroke="#30363d" stroke-width="1.5"/>
+  <text x="535" y="209" text-anchor="middle" fill="#e6edf3" font-size="12" font-weight="700">MinIO</text>
+
+  <line x1="390" y1="226" x2="390" y2="258" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="230" y="260" width="320" height="60" rx="8" fill="#111827" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="390" y="284" text-anchor="middle" fill="#fdba74" font-size="12" font-weight="700">XGBoost (per symbol)</text>
+  <text x="390" y="302" text-anchor="middle" fill="#8b949e" font-size="10">+ Markowitz optimizer</text>
+
+  <line x1="390" y1="320" x2="390" y2="352" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <line x1="215" y1="336" x2="185" y2="336" stroke="#64748b" stroke-width="1.2" marker-end="url(#arrow)"/>
+  <text x="150" y="332" text-anchor="middle" fill="#64748b" font-size="9">Redis cache</text>
+
+  <rect x="150" y="354" width="480" height="120" rx="8" fill="#111827" stroke="#f59e0b" stroke-width="1.5"/>
+  <text x="390" y="378" text-anchor="middle" fill="#fdba74" font-size="12" font-weight="700">FastAPI</text>
+  <text x="390" y="398" text-anchor="middle" fill="#8b949e" font-size="10">/predictions   /sentiment</text>
+  <text x="390" y="416" text-anchor="middle" fill="#8b949e" font-size="10">/backtest   /portfolio</text>
+  <text x="390" y="434" text-anchor="middle" fill="#8b949e" font-size="10">/metrics, Prometheus scrape</text>
+  <text x="390" y="458" text-anchor="middle" fill="#64748b" font-size="9">nginx proxy</text>
+
+  <line x1="390" y1="474" x2="390" y2="500" stroke="#f59e0b" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+  <rect x="230" y="502" width="320" height="46" rx="8" fill="#111827" stroke="#30363d" stroke-width="1.5"/>
+  <text x="390" y="524" text-anchor="middle" fill="#e6edf3" font-size="12" font-weight="700">React Dashboard</text>
+  <text x="390" y="540" text-anchor="middle" fill="#8b949e" font-size="9">6 tabs, port 3012</text>
+</svg>

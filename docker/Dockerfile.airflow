@@ -1,0 +1,27 @@
+FROM apache/airflow:2.8.0-python3.11
+
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc libpq-dev openjdk-17-jdk-headless && \
+    rm -rf /var/lib/apt/lists/*
+
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+
+USER airflow
+
+COPY requirements.txt /tmp/requirements.txt
+RUN pip install --no-cache-dir \
+    apache-airflow-providers-postgres \
+    apache-airflow-providers-redis \
+    kafka-python pyspark pandas pyarrow \
+    requests feedparser tenacity \
+    scikit-learn xgboost torch \
+    mlflow loguru pydantic pydantic-settings \
+    great-expectations ta minio redis sqlalchemy
+
+COPY --chown=airflow:root data_ingestion/  /opt/airflow/plugins/data_ingestion/
+COPY --chown=airflow:root data_processing/ /opt/airflow/plugins/data_processing/
+COPY --chown=airflow:root data_storage/    /opt/airflow/plugins/data_storage/
+COPY --chown=airflow:root ml_model/        /opt/airflow/plugins/ml_model/
+COPY --chown=airflow:root airflow_dags/    /opt/airflow/dags/
+COPY --chown=airflow:root configs/         /opt/airflow/configs/

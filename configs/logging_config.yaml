@@ -1,0 +1,28 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  standard:
+    format: "{time:YYYY-MM-DD HH:mm:ss} | {level: <8} | {name}:{function}:{line} - {message}"
+    datefmt: "%Y-%m-%d %H:%M:%S"
+
+handlers:
+  console:
+    sink: sys.stdout
+    level: INFO
+    format: "<green>{time:HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan> - <level>{message}</level>"
+  file:
+    sink: "logs/pipeline_{time:YYYY-MM-DD}.log"
+    level: DEBUG
+    rotation: "1 day"
+    retention: "30 days"
+    compression: "gz"
+
+loguru:
+  handlers:
+    - sink: sys.stdout
+      level: INFO
+    - sink: "logs/pipeline_{time}.log"
+      level: DEBUG
+      rotation: "500 MB"
+      retention: "30 days"

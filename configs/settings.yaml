@@ -1,0 +1,38 @@
+app:
+  name: "ChronoFin"
+  env: "development"
+  log_level: "INFO"
+
+api:
+  alpha_vantage_key: "${ALPHA_VANTAGE_KEY}"
+  base_url: "https://www.alphavantage.co/query"
+  symbols: ["AAPL", "GOOGL", "MSFT", "AMZN", "META"]
+  batch_interval_minutes: 15
+
+kafka:
+  bootstrap_servers: "localhost:9092"
+  topic_raw: "stock_prices_raw"
+  topic_processed: "stock_prices_processed"
+  consumer_group: "stock_pipeline"
+
+storage:
+  lake_path: "./data/raw_lake"
+  postgres_url: "${POSTGRES_URL}"
+  redis_url: "${REDIS_URL}"
+  minio_endpoint: "${MINIO_ENDPOINT}"
+  minio_access_key: "${MINIO_ACCESS_KEY}"
+  minio_secret_key: "${MINIO_SECRET_KEY}"
+
+ml:
+  model_path: "./models"
+  lstm_lookback: 60
+  train_test_split: 0.85
+  mlflow_tracking_uri: "http://localhost:5000"
+  blend_weights:
+    lstm: 0.6
+    xgboost: 0.4
+
+feature_flags:
+  use_sentiment: true
+  use_spark: true
+  use_redis_cache: true
